@@ -2,13 +2,28 @@ const { google } = require('googleapis');
 const path = require('path');
 
 function getAuth() {
+  const scopes = [
+    'https://www.googleapis.com/auth/spreadsheets.readonly'
+  ];
+
+  // Render：使用環境變數中的 Service Account JSON
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_JSON) {
+    const credentials = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+
+    return new google.auth.GoogleAuth({
+      credentials,
+      scopes
+    });
+  }
+
+  // 本機：使用 service-account.json
   const credentialsPath = path.resolve(
     process.env.GOOGLE_CREDENTIALS || './credentials/service-account.json'
   );
 
   return new google.auth.GoogleAuth({
     keyFile: credentialsPath,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly']
+    scopes
   });
 }
 
